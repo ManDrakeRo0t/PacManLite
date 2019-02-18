@@ -10,7 +10,6 @@
 int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y,bot6x,bot6y,bot7x,bot7y;
 enum eDir {STOP,UP,DOWN,LEFT,RIGHT};
 int AllowWays[4];
-int PriorityWays[4];
 eDir bot1dir;
 eDir bot2dir;
 eDir bot3dir;
@@ -119,55 +118,6 @@ void setting(){
 	bot6dir = DOWN;
 	bot7dir = DOWN;
 
-}
-
-int Max(int a,int b){
-	int y;
-	int x;
-	if(a < 0){
-		x = -a;	
-	}else{
-		x = a;	
-	}
-	if(b < 0){
-		y = -b;	
-	}else{
-		y = b;	
-	}
-	if(x >= y){
-		return a;	
-	}else{
-		return b;	
-	}
-}
-int Matches(){
-	for(int i = 0;i < 4;i++){
-		if((AllowWays[i] == PriorityWays[i]) && AllowWays[i] == 1){
-			return i;
-		}
-	}
-	return -1;
-}
-void PriorityDir(int botx,int boty){
-	int y = boty - PY;
-	int x = botx = PX;
-	for(int i = 0;i < 4;i++){
-		PriorityWays[i] = 0;
-	}
-	int Maxbias = Max(x,y);
-	if(Maxbias == y || Maxbias == -y){
-		if(y <= 0){
-			PriorityWays[1] = 1;
-		}else if(y > 0){
-			PriorityWays[0] = 1;	
-		}	
-	}else if(Maxbias == x || Maxbias == -x){
-		if(x <= 0){
-			PriorityWays[3] = 1;
-		}else if(x > 0){
-			PriorityWays[2] = 1;
-		}
-	}
 }
 
 float Distance(int botx,int boty){
@@ -345,37 +295,16 @@ int NextStep(eDir botdir,int tempy,int tempx){
 
 void bot4logic(){
 	DeathCheck(bot4dir,bot4x,bot4y);
-	int nextway = 6;
 	int num = 0;
 	if((((Distance(bot4x,bot4y) > 16)||Distance(bot4x,bot4y) < 6) && ChangeDir(bot5x,bot5y)) || (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
 		bot4dir = STOP;
-		PriorityDir(bot4x,bot4y);
 		PossibleWays(bot4x,bot4y);
-		if(Matches() != -1){
-			nextway = Matches();
-				switch(nextway){
-						case 0:
-							bot4dir = UP;
-							break;
-						case 1:
-							bot4dir = DOWN;
-							break;
-						case 2:
-							bot4dir = LEFT;
-							break;
-						case 3:
-							bot4dir = RIGHT;
-							break;
-						default:
-							bot4dir = STOP;
-				}
-		}
 		for(int i = 0;i < 4;i++){
 			if(AllowWays[i] == 1){
 				num++;
 			}	
 		}
-		while(bot4dir == STOP){
+		do{
 			int ii = rand();
 			int nextway = ii % ++num;
 			if(AllowWays[nextway] == 1){
@@ -396,7 +325,7 @@ void bot4logic(){
 						bot4dir = STOP;
 				 }
 			}
-		}
+		}while(bot4dir == STOP);
 	}
 			
 	switch (bot4dir){
@@ -445,39 +374,18 @@ void bot4logic(){
 
 void bot7logic(){
 	DeathCheck(bot7dir,bot7x,bot7y);
-	int nextway = 6;
 	int num = 0;
 	if((((Distance(bot7x,bot7y) > 16)||Distance(bot7x,bot7y) < 6) && ChangeDir(bot7x,bot7y)) || (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
 		bot7dir = STOP;
-		PriorityDir(bot7x,bot7y);
 		PossibleWays(bot7x,bot7y);
-		if(Matches() != -1){
-			nextway = Matches();
-				switch(nextway){
-						case 0:
-							bot7dir = UP;
-							break;
-						case 1:
-							bot7dir = DOWN;
-							break;
-						case 2:
-							bot7dir = LEFT;
-							break;
-						case 3:
-							bot7dir = RIGHT;
-							break;
-						default:
-							bot7dir = STOP;
-				}
-		}
 		for(int i = 0;i < 4;i++){
 			if(AllowWays[i] == 1){
 				num++;
 			}	
 		}
-		while(bot7dir == STOP){
+		do{
 			int ii = rand();
-		 nextway = ii % ++num;
+			int nextway = ii % ++num;
 			if(AllowWays[nextway] == 1){
 				switch(nextway){
 					case 0:
@@ -496,7 +404,7 @@ void bot7logic(){
 						bot7dir = STOP;
 				 }
 			}
-		}
+		}while(bot7dir == STOP);
 	}
 			
 	switch (bot7dir){
@@ -545,39 +453,18 @@ void bot7logic(){
 
 void bot5logic(){
 	DeathCheck(bot5dir,bot5x,bot5y);
-	int nextway = 6;
 	int num = 0;
 	if((((Distance(bot5x,bot5y) > 16)||Distance(bot5x,bot5y) < 6) && ChangeDir(bot5x,bot5y)) || (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
 		bot5dir = STOP;
-		PriorityDir(bot5x,bot5y);
 		PossibleWays(bot5x,bot5y);
-		if(Matches() != -1){
-			nextway = Matches();
-				switch(nextway){
-						case 0:
-							bot5dir = UP;
-							break;
-						case 1:
-							bot5dir = DOWN;
-							break;
-						case 2:
-							bot5dir = LEFT;
-							break;
-						case 3:
-							bot5dir = RIGHT;
-							break;
-						default:
-							bot5dir = STOP;
-				}
-		}
 		for(int i = 0;i < 4;i++){
 			if(AllowWays[i] == 1){
 				num++;
 			}	
 		}
-		while(bot5dir == STOP){
+		do{
 			int ii = rand();
-			 nextway = ii % ++num;
+			int nextway = ii % ++num;
 			if(AllowWays[nextway] == 1){
 				switch(nextway){
 					case 0:
@@ -596,7 +483,7 @@ void bot5logic(){
 						bot5dir = STOP;
 				 }
 			}
-		}
+		}while(bot5dir == STOP);
 	}
 			
 	switch (bot5dir){
@@ -645,39 +532,18 @@ void bot5logic(){
 
 void bot6logic(){
 	DeathCheck(bot6dir,bot6x,bot6y);
-	int nextway = 6;
 	int num = 0;
 	if(CheckWallforBot(bot6dir,bot6x,bot6y) == 0){
 		bot6dir = STOP;
-		PriorityDir(bot6x,bot6y);
 		PossibleWays(bot6x,bot6y);
-		if(Matches() != -1){
-			nextway = Matches();
-				switch(nextway){
-						case 0:
-							bot6dir = UP;
-							break;
-						case 1:
-							bot6dir = DOWN;
-							break;
-						case 2:
-							bot6dir = LEFT;
-							break;
-						case 3:
-							bot6dir = RIGHT;
-							break;
-						default:
-							bot6dir = STOP;
-				}
-		}
 		for(int i = 0;i < 4;i++){
 			if(AllowWays[i] == 1){
 				num++;
 			}	
 		}
-		while(bot6dir == STOP){
+		do{
 			int ii = rand();
-			nextway = ii % ++num;
+			int nextway = ii % ++num;
 			if(AllowWays[nextway] == 1){
 				switch(nextway){
 					case 0:
@@ -696,7 +562,7 @@ void bot6logic(){
 						bot6dir = STOP;
 				 }
 			}
-		}
+		}while(bot6dir == STOP);
 	}
 			
 	switch (bot6dir){
