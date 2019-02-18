@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y;
+int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y,bot6x,bot6y,bot7x,bot7y;
 enum eDir {STOP,UP,DOWN,LEFT,RIGHT};
 int AllowWays[4];
 eDir bot1dir;
@@ -14,13 +14,14 @@ eDir bot2dir;
 eDir bot3dir;
 eDir bot4dir;
 eDir bot5dir;
-
+eDir bot6dir;
+eDir bot7dir;
 eDir dir;
 
 char map[][41]    =  {{" ###################################### "},
 					  		 {" #.................##.................# "},
 					  		 {" #.#####.########..##..########.#####.# "},
-					  		 {" # .................................. # "},
+					  		 {" #....................................# "},
 					  		 {" #.#####.##.################.##.#####.# "},
 					  		 {" #.......##........##........##.......# "},
 					  		 {" #######.######### ## #########.####### "},
@@ -35,13 +36,13 @@ char map[][41]    =  {{" ###################################### "},
 					  		 {" #.#####.#########.##.#########.#####.# "},
 					  		 {" #....##...........0............##....# "},
 					  		 {" #.##.##.######.########.######.##.##.# "},
-					  		 {" # .................................. # "},
+					  		 {" #....................................# "},
 					  		 {" ###################################### "}};
 
 char bonus[][41] =   {{" ###################################### "},
 					  		 {" #.................##.................# "},
 					  		 {" #.#####.########..##..########.#####.# "},
-					  		 {" # .................................. # "},
+					  		 {" #....................................# "},
 					  		 {" #.#####.##.################.##.#####.# "},
 					  		 {" #.......##........##........##.......# "},
 					  		 {" #######.######### ## #########.####### "},
@@ -56,7 +57,28 @@ char bonus[][41] =   {{" ###################################### "},
 					  		 {" #.#####.#########.##.#########.#####.# "},
 					  		 {" #....##........................##....# "},
 					  		 {" #.##.##.######.########.######.##.##.# "},
-					  		 {" # .................................. # "},
+					  		 {" #....................................# "},
+					  		 {" ###################################### "}};
+					  		 
+char botmap[][41] =  {{" ###################################### "},
+					  		 {" #%.....%.........%##%.........%.....%# "},
+					  		 {" #.#####.########..##..########.#####.# "},
+					  		 {" #%.....%..%......%..%......%..%.....%# "},
+					  		 {" #.#####.##.################.##.#####.# "},
+					  		 {" #%.....%##%......%##%......%##%.....%# "},
+					  		 {" #######.######### ## #########.####### "},
+					  		 {"      ##.##%.......%%.......%##.##      "},
+					  		 {"########.##.#######  #######.##.########"},
+					  		 {"       #.  .##    #  #    ##.  .#       "},
+					  		 {"       #%  %##    #  #    ##%  %#       "},
+					  		 {"########.##.#######  #######.##.########"},
+					  		 {"      ##.##%.......%%.......%##.##      "},
+					  		 {" #######.## ################ ##.####### "},
+					  		 {" #%.....%..%......%##%......%..%.....%# "},
+					  		 {" #.#####.#########.##.#########.#####.# "},
+					  		 {" #%..%##%......%..%..%..%......%##%..%# "},
+					  		 {" #.##.##.######.########.######.##.##.# "},
+					  		 {" #%..%..%......%........%......%..%..%# "},
 					  		 {" ###################################### "}};
 
 	
@@ -71,22 +93,28 @@ void setting(){
 	PX = 19;
 	PY = 16;
 	dir = STOP;
-	bot1x = 3;
+	bot1x = 2;
 	bot1y = 18;
-	bot2x = 37;
+	bot2x = 38;
 	bot2y = 3;
 	bot3x = 11;
 	bot3y = 12;
-	bot4x = 20;
-	bot4y = 10;
-   bot5x = 19;
+	bot4x = 19;
+	bot4y = 9;
+   bot5x = 20;
 	bot5y = 9;
+	bot6x = 19;
+	bot6y = 10;
+	bot7x = 20;
+	bot7y = 10;
 	
 	bot1dir = RIGHT;
 	bot2dir = LEFT;
 	bot3dir = LEFT;
 	bot4dir = UP;
-	bot5dir = DOWN;
+	bot5dir = UP;
+	bot6dir = DOWN;
+	bot7dir = DOWN;
 
 }
 
@@ -98,21 +126,29 @@ void PossibleWays(int x,int y){
    
 	int tempx = x;
 	int tempy = y;
-	if(bonus[tempy-1][tempx] != '#' ){
+	if(botmap[tempy-1][tempx] != '#' ){
 		AllowWays[0] = 1;
 	}
-	if(bonus[tempy+1][tempx] != '#' ){
+	if(botmap[tempy+1][tempx] != '#' ){
 		AllowWays[1] = 1;
 	}
-	if(bonus[tempy][tempx-1] != '#' ){
+	if(botmap[tempy][tempx-1] != '#' ){
 		AllowWays[2] = 1;
 	}
-	if(bonus[tempy][tempx+1] != '#' ){
+	if(botmap[tempy][tempx+1] != '#' ){
 		AllowWays[3] = 1;
 	}
 	
 }
 
+int ChangeDir(int x,int y){
+	if(botmap[y][x] == '%'){
+		return 1;
+	}else{
+		return 0;	
+	}
+	
+}
 int CheckWall(eDir Nextd,int x,int y){
 	int nextx = x;
 	int nexty = y;
@@ -145,6 +181,38 @@ int CheckWall(eDir Nextd,int x,int y){
 			return 1;
 	}
 }
+int CheckWallforBot(eDir Nextd,int x,int y){
+	int nextx = x;
+	int nexty = y;
+	switch (Nextd){
+		case LEFT :
+			nextx--;
+			if(botmap[nexty][nextx] == '#'){
+				return 0;	
+			}
+			break;	
+		case RIGHT :
+			nextx++;
+			if(botmap[nexty][nextx] == '#'){
+				return 0;	
+			}
+			break;
+		case UP :
+			nexty--;
+			if(botmap[nexty][nextx] == '#'){
+				return 0;	
+			}
+			break;
+		case DOWN :
+			nexty++;
+			if(botmap[nexty][nextx] == '#'){
+				return 0;	
+			}
+			break;
+		default:
+			return 1;
+	}
+}
 
 int NextStep(eDir botdir,int boty,int botx){
 	int tempx = botx;
@@ -160,7 +228,7 @@ int NextStep(eDir botdir,int boty,int botx){
 
 void bot4logic(){
 	int num = 0;
-	if(CheckWall(bot4dir,bot4x,bot4y) == 0){
+	if(ChangeDir(bot4x,bot4y) && (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
 		bot4dir = STOP;
 		PossibleWays(bot4x,bot4y);
 		for(int i = 0;i < 4;i++){
@@ -236,9 +304,87 @@ void bot4logic(){
 	
 }
 
+void bot7logic(){
+	int num = 0;
+	if(ChangeDir(bot7x,bot7y) && (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
+		bot7dir = STOP;
+		PossibleWays(bot7x,bot7y);
+		for(int i = 0;i < 4;i++){
+			if(AllowWays[i] == 1){
+				num++;
+			}	
+		}
+		do{
+			int ii = rand();
+			int nextway = ii % ++num;
+			if(AllowWays[nextway] == 1){
+				switch(nextway){
+					case 0:
+						bot7dir = UP;
+						break;
+					case 1:
+						bot7dir = DOWN;
+						break;
+					case 2:
+						bot7dir = LEFT;
+						break;
+					case 3:
+						bot7dir = RIGHT;
+						break;
+					default:
+						bot7dir = STOP;
+				 }
+			}
+		}while(bot7dir == STOP);
+	}
+			
+	switch (bot7dir){
+		case LEFT:
+			if(NextStep(bot7dir,bot7y,bot7x) == 0){
+				map[bot7y][bot7x] = ' ';	
+			}else{
+				map[bot7y][bot7x] = '.';	
+			}
+			bot7x--;
+			map[bot7y][bot7x] = '@';
+			break;
+		case RIGHT:
+			if(NextStep(bot7dir,bot7y,bot7x) == 0){
+				map[bot7y][bot7x] = ' ';	
+			}else{
+				map[bot7y][bot7x] = '.';	
+			}
+			bot7x++;
+			map[bot7y][bot7x] = '@';
+			break;
+		case UP:
+			if(NextStep(bot7dir,bot7y,bot7x) == 0){
+				map[bot7y][bot7x] = ' ';	
+			}else{
+				map[bot7y][bot7x] = '.';	
+			}
+			bot7y--;
+			map[bot7y][bot7x] = '@';
+			break;
+		case DOWN:
+			if(NextStep(bot7dir,bot7y,bot7x) == 0){
+				map[bot7y][bot7x] = ' ';	
+			}else{
+				map[bot7y][bot7x] = '.';	
+			}
+			bot7y++;
+			map[bot7y][bot7x] = '@';
+			break;
+		case STOP:
+			map[bot7y][bot7x] = '@';
+			break;
+		}
+	
+}
+
 void bot5logic(){
 	int num = 0;
-	if(CheckWall(bot5dir,bot5x,bot5y) == 0){
+	if(ChangeDir(bot5x,bot5y) && (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
 		bot5dir = STOP;
 		PossibleWays(bot5x,bot5y);
 		for(int i = 0;i < 4;i++){
@@ -314,6 +460,84 @@ void bot5logic(){
 	
 }
 
+void bot6logic(){
+	int num = 0;
+	if(CheckWallforBot(bot6dir,bot6x,bot6y) == 0){
+		bot6dir = STOP;
+		PossibleWays(bot6x,bot6y);
+		for(int i = 0;i < 4;i++){
+			if(AllowWays[i] == 1){
+				num++;
+			}	
+		}
+		do{
+			int ii = rand();
+			int nextway = ii % ++num;
+			if(AllowWays[nextway] == 1){
+				switch(nextway){
+					case 0:
+						bot6dir = UP;
+						break;
+					case 1:
+						bot6dir = DOWN;
+						break;
+					case 2:
+						bot6dir = LEFT;
+						break;
+					case 3:
+						bot6dir = RIGHT;
+						break;
+					default:
+						bot6dir = STOP;
+				 }
+			}
+		}while(bot6dir == STOP);
+	}
+			
+	switch (bot6dir){
+		case LEFT:
+			if(NextStep(bot6dir,bot6y,bot6x) == 0){
+				map[bot6y][bot6x] = ' ';	
+			}else{
+				map[bot6y][bot6x] = '.';	
+			}
+			bot6x--;
+			map[bot6y][bot6x] = '@';
+			break;
+		case RIGHT:
+			if(NextStep(bot6dir,bot6y,bot6x) == 0){
+				map[bot6y][bot6x] = ' ';	
+			}else{
+				map[bot6y][bot6x] = '.';	
+			}
+			bot6x++;
+			map[bot6y][bot6x] = '@';
+			break;
+		case UP:
+			if(NextStep(bot6dir,bot6y,bot6x) == 0){
+				map[bot6y][bot6x] = ' ';	
+			}else{
+				map[bot6y][bot6x] = '.';	
+			}
+			bot6y--;
+			map[bot6y][bot6x] = '@';
+			break;
+		case DOWN:
+			if(NextStep(bot6dir,bot6y,bot6x) == 0){
+				map[bot6y][bot6x] = ' ';	
+			}else{
+				map[bot6y][bot6x] = '.';	
+			}
+			bot6y++;
+			map[bot6y][bot6x] = '@';
+			break;
+		case STOP:
+			map[bot6y][bot6x] = '@';
+			break;
+		}
+	
+}
+
 void bot3logic(){
 	if(bot3x == 28 && bot3y == 12){
 		bot3dir = UP;
@@ -366,9 +590,9 @@ void bot3logic(){
 
 
 void bot2logic(){
-	if(bot2x == 37){
+	if(bot2x == 38){
 		bot2dir = LEFT;
-	}else if(bot2x == 3){
+	}else if(bot2x == 2){
 		bot2dir = RIGHT;
 	}
 	switch (bot2dir){
@@ -394,9 +618,9 @@ void bot2logic(){
 }
 
 void bot1logic(){
-	if(bot1x == 37){
+	if(bot1x == 38){
 		bot1dir = LEFT;
-	}else if(bot1x == 3){
+	}else if(bot1x == 2){
 		bot1dir = RIGHT;
 	}
 	switch (bot1dir){
@@ -467,7 +691,7 @@ void logic(){
 	if(map[PY][PX] == '@' /*|| map[PY][NextX] == '@' || map[NextY][PX] == '@' || map[NextY][NextX] == '@'*/){
 		GameOver = 0;
 	}
-	if(score == 286){
+	if(score == 290){
 		GameOver = 0;	
 	}
 	if(bonus[PY][PX] == '.'){
@@ -536,8 +760,8 @@ void Print(){
 		puts(map[i]);
 		//printf("%s\n",map[i]);
 	}	
-	printf("����: %i\n",score);
-	printf(" PY %i--PX %i",PY,PX);
+	printf("счет: %i осталось: %i\n",score,290 - score);
+	//printf(" PY %i--PX %i",PY,PX);
 	Sleep(250);
 	system("cls");
 }
@@ -554,6 +778,8 @@ int main(){
 		bot3logic();
 		bot4logic();
 		bot5logic();
+		bot6logic();
+		bot7logic();
 		logic();
 	}
 	
