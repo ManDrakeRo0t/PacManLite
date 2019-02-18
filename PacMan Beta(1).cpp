@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y,bot6x,bot6y,bot7x,bot7y;
 enum eDir {STOP,UP,DOWN,LEFT,RIGHT};
@@ -85,6 +86,7 @@ char botmap[][41] =  {{" ###################################### "},
 
 void setting(){
 	srand(time(NULL));
+	//system("LineSelection - 0");
 	system("mode con cols=40 lines=22");
 	setlocale(LC_ALL, "");
 	system("color 1B");
@@ -118,6 +120,73 @@ void setting(){
 
 }
 
+float Distance(int botx,int boty){
+	float a = botx - PX;
+	float b = boty - PY;
+	float dis;
+	return dis = sqrt((pow(a,2))+(pow(b,2)));
+}
+
+void DeathCheckPlayer(eDir Nextd,int x,int y){
+	int nextx = x;
+	int nexty = y;
+	switch (Nextd){
+		case LEFT :
+			nextx--;
+			if(map[nexty][nextx] == '@'){
+				GameOver = 0;	
+			}
+			break;	
+		case RIGHT :
+			nextx++;
+			if(map[nexty][nextx] == '@'){
+				GameOver = 0;	
+			}
+			break;
+		case UP :
+			nexty--;
+			if(map[nexty][nextx] == '@'){
+				GameOver = 0;	
+			}
+			break;
+		case DOWN :
+			nexty++;
+			if(map[nexty][nextx] == '@'){
+				GameOver = 0;	
+			}
+			break;
+	}
+}
+void DeathCheck(eDir Nextd,int x,int y){
+	int nextx = x;
+	int nexty = y;
+	switch (Nextd){
+		case LEFT :
+			nextx--;
+			if(map[nexty][nextx] == '0'){
+				GameOver = 0;	
+			}
+			break;	
+		case RIGHT :
+			nextx++;
+			if(map[nexty][nextx] == '0'){
+				GameOver = 0;	
+			}
+			break;
+		case UP :
+			nexty--;
+			if(map[nexty][nextx] == '0'){
+				GameOver = 0;	
+			}
+			break;
+		case DOWN :
+			nexty++;
+			if(map[nexty][nextx] == '0'){
+				GameOver = 0;	
+			}
+			break;
+	}
+}
 void PossibleWays(int x,int y){
 
    for(int i = 0;i < 4;i++){
@@ -214,9 +283,7 @@ int CheckWallforBot(eDir Nextd,int x,int y){
 	}
 }
 
-int NextStep(eDir botdir,int boty,int botx){
-	int tempx = botx;
-	int tempy = boty;
+int NextStep(eDir botdir,int tempy,int tempx){
 	if(bonus[tempy][tempx] == ' '){
 		return 0;
 	}else if(bonus[tempy][tempx] == '.'){
@@ -227,8 +294,9 @@ int NextStep(eDir botdir,int boty,int botx){
 }
 
 void bot4logic(){
+	DeathCheck(bot4dir,bot4x,bot4y);
 	int num = 0;
-	if(ChangeDir(bot4x,bot4y) || (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
+	if((((Distance(bot4x,bot4y) > 16)||Distance(bot4x,bot4y) < 6) && ChangeDir(bot5x,bot5y)) || (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
 		bot4dir = STOP;
 		PossibleWays(bot4x,bot4y);
 		for(int i = 0;i < 4;i++){
@@ -305,8 +373,9 @@ void bot4logic(){
 }
 
 void bot7logic(){
+	DeathCheck(bot7dir,bot7x,bot7y);
 	int num = 0;
-	if(ChangeDir(bot7x,bot7y) || (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
+	if((((Distance(bot7x,bot7y) > 16)||Distance(bot7x,bot7y) < 6) && ChangeDir(bot7x,bot7y)) || (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
 		bot7dir = STOP;
 		PossibleWays(bot7x,bot7y);
 		for(int i = 0;i < 4;i++){
@@ -383,8 +452,9 @@ void bot7logic(){
 }
 
 void bot5logic(){
+	DeathCheck(bot5dir,bot5x,bot5y);
 	int num = 0;
-	if(ChangeDir(bot5x,bot5y) || (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
+	if((((Distance(bot5x,bot5y) > 16)||Distance(bot5x,bot5y) < 6) && ChangeDir(bot5x,bot5y)) || (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
 		bot5dir = STOP;
 		PossibleWays(bot5x,bot5y);
 		for(int i = 0;i < 4;i++){
@@ -461,6 +531,7 @@ void bot5logic(){
 }
 
 void bot6logic(){
+	DeathCheck(bot6dir,bot6x,bot6y);
 	int num = 0;
 	if(CheckWallforBot(bot6dir,bot6x,bot6y) == 0){
 		bot6dir = STOP;
@@ -539,6 +610,7 @@ void bot6logic(){
 }
 
 void bot3logic(){
+	DeathCheck(bot3dir,bot3x,bot3y);
 	if(bot3x == 28 && bot3y == 12){
 		bot3dir = UP;
 	}else if(bot3x == 28 && bot3y == 7){
@@ -590,6 +662,7 @@ void bot3logic(){
 
 
 void bot2logic(){
+	DeathCheck(bot2dir,bot2x,bot2y);
 	if(bot2x == 37){
 		bot2dir = LEFT;
 	}else if(bot2x == 2){
@@ -618,6 +691,7 @@ void bot2logic(){
 }
 
 void bot1logic(){
+	DeathCheck(bot1dir,bot1x,bot1y);
 	if(bot1x == 37){
 		bot1dir = LEFT;
 	}else if(bot1x == 2){
@@ -691,6 +765,7 @@ void logic(){
 	if(map[PY][PX] == '@' /*|| map[PY][NextX] == '@' || map[NextY][PX] == '@' || map[NextY][NextX] == '@'*/){
 		GameOver = 0;
 	}
+	DeathCheckPlayer(dir,PX,PY);
 	if(score == 290){
 		GameOver = 0;	
 	}
@@ -762,8 +837,14 @@ void Print(){
 	}	
 	printf("score: %i left: %i\n",score,290 - score);
 	//printf(" PY %i--PX %i",PY,PX);
-	Sleep(250);
-	system("cls");
+	Sleep(100);
+	if(GameOver == 1){
+		system("cls");
+	}else if(GameOver == 0 || score != 290){
+		printf("YOU DIED");	
+	}else{
+		printf("Вы победили!!!");	
+	}
 }
 
 
@@ -782,6 +863,7 @@ int main(){
 		bot7logic();
 		logic();
 	}
-	
+	Print();
 	getch();	
+	getch();
 }
