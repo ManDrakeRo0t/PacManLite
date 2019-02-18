@@ -95,7 +95,7 @@ void setting(){
 	dir = STOP;
 	bot1x = 2;
 	bot1y = 18;
-	bot2x = 38;
+	bot2x = 37;
 	bot2y = 3;
 	bot3x = 11;
 	bot3y = 12;
@@ -228,7 +228,7 @@ int NextStep(eDir botdir,int boty,int botx){
 
 void bot4logic(){
 	int num = 0;
-	if(ChangeDir(bot4x,bot4y) && (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
+	if(ChangeDir(bot4x,bot4y) || (CheckWallforBot(bot4dir,bot4x,bot4y) == 0)){
 		bot4dir = STOP;
 		PossibleWays(bot4x,bot4y);
 		for(int i = 0;i < 4;i++){
@@ -306,7 +306,7 @@ void bot4logic(){
 
 void bot7logic(){
 	int num = 0;
-	if(ChangeDir(bot7x,bot7y) && (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
+	if(ChangeDir(bot7x,bot7y) || (CheckWallforBot(bot7dir,bot7x,bot7y) == 0)){
 		bot7dir = STOP;
 		PossibleWays(bot7x,bot7y);
 		for(int i = 0;i < 4;i++){
@@ -384,7 +384,7 @@ void bot7logic(){
 
 void bot5logic(){
 	int num = 0;
-	if(ChangeDir(bot5x,bot5y) && (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
+	if(ChangeDir(bot5x,bot5y) || (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
 		bot5dir = STOP;
 		PossibleWays(bot5x,bot5y);
 		for(int i = 0;i < 4;i++){
@@ -590,7 +590,7 @@ void bot3logic(){
 
 
 void bot2logic(){
-	if(bot2x == 38){
+	if(bot2x == 37){
 		bot2dir = LEFT;
 	}else if(bot2x == 2){
 		bot2dir = RIGHT;
@@ -618,7 +618,7 @@ void bot2logic(){
 }
 
 void bot1logic(){
-	if(bot1x == 38){
+	if(bot1x == 37){
 		bot1dir = LEFT;
 	}else if(bot1x == 2){
 		bot1dir = RIGHT;
@@ -760,7 +760,7 @@ void Print(){
 		puts(map[i]);
 		//printf("%s\n",map[i]);
 	}	
-	printf("счет: %i осталось: %i\n",score,290 - score);
+	printf("score: %i left: %i\n",score,290 - score);
 	//printf(" PY %i--PX %i",PY,PX);
 	Sleep(250);
 	system("cls");
