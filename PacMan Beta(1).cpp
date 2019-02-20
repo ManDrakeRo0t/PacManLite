@@ -7,9 +7,11 @@
 #include <time.h>
 #include <math.h>
 
-int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y,bot6x,bot6y,bot7x,bot7y;
+int PX,PY,GameOver,score,bot1x,bot1y,bot2x,bot2y,bot3x,bot3y,bot4x,bot4y,bot5x,bot5y,bot6x,bot6y,bot7x,bot7y,bot8x,bot8y,bot9x,bot9y;
 enum eDir {STOP,UP,DOWN,LEFT,RIGHT};
 int AllowWays[4];
+int PriorityWay1[4];
+int PriorityWay2[4];
 eDir bot1dir;
 eDir bot2dir;
 eDir bot3dir;
@@ -17,6 +19,8 @@ eDir bot4dir;
 eDir bot5dir;
 eDir bot6dir;
 eDir bot7dir;
+eDir bot8dir;
+eDir bot9dir;
 eDir dir;
 
 char map[][41]    =  {{" ###################################### "},
@@ -68,7 +72,7 @@ char botmap[][41] =  {{" ###################################### "},
 					  		 {" #.#####.##.################.##.#####.# "},
 					  		 {" #%.....%##%......%##%......%##%.....%# "},
 					  		 {" #######.######### ## #########.####### "},
-					  		 {"      ##.##%.......%%.......%##.##      "},
+					  		 {"      ##.##%......%%%%......%##.##      "},
 					  		 {"########.##.#######  #######.##.########"},
 					  		 {"       #.  .##    #  #    ##.  .#       "},
 					  		 {"       #%  %##    #  #    ##%  %#       "},
@@ -87,7 +91,7 @@ char botmap[][41] =  {{" ###################################### "},
 void setting(){
 	srand(time(NULL));
 	//system("LineSelection - 0");
-	system("mode con cols=40 lines=22");
+	//system("mode con cols=40 lines=22");
 	setlocale(LC_ALL, "");
 	system("color 1B");
 	GameOver = 1;
@@ -104,11 +108,15 @@ void setting(){
 	bot4x = 19;
 	bot4y = 9;
    bot5x = 20;
-	bot5y = 9;
+	bot5y = 10;
 	bot6x = 19;
 	bot6y = 10;
 	bot7x = 20;
-	bot7y = 10;
+	bot7y = 9;
+	bot8y = 1;
+	bot8x = 37;
+	bot9y = 1;
+	bot9x = 2;
 	
 	bot1dir = RIGHT;
 	bot2dir = LEFT;
@@ -117,6 +125,8 @@ void setting(){
 	bot5dir = UP;
 	bot6dir = DOWN;
 	bot7dir = DOWN;
+	bot8dir = LEFT;
+	bot9dir = DOWN;
 
 }
 
@@ -126,6 +136,126 @@ float Distance(int botx,int boty){
 	float dis;
 	return dis = sqrt((pow(a,2))+(pow(b,2)));
 }
+int Max(int a,int b){
+	int y;
+	int x;
+	if(a < 0){
+		x = -a;	
+	}else{
+		x = a;	
+	}
+	if(b < 0){
+		y = -b;	
+	}else{
+		y = b;	
+	}
+	if(x >= y){
+		return a;	
+	}else{
+		return b;	
+	}
+}
+
+
+int PriorityWays(int x,int y){
+	int xbias = x - PX;
+	int ybias = y - PY;
+	
+	int Maxbias = Max(xbias,ybias);
+	//printf("xb %i\n",xbias);
+	//printf("yb %i\n",ybias);
+	//printf("mb %i\n",Maxbias);
+	for(int i = 0;i < 4;i++){
+		PriorityWay1[i] = 0;
+	}
+	for(int i = 0;i < 4;i++){
+		PriorityWay2[i] = 0;
+	}
+		if(x <= PX && y >= PY){
+			if(Maxbias == ybias || Maxbias == -ybias){
+				PriorityWay1[0]  = 1;
+				PriorityWay2[3] = 1;
+			}
+			if(Maxbias == xbias || Maxbias == - xbias){
+				PriorityWay1[3]  = 1;
+				PriorityWay2[0] = 1;
+			}
+		}
+		if(x <= PX && y <= PY){
+			if(Maxbias == ybias || Maxbias == -ybias){
+				PriorityWay1[1]  = 1;
+				PriorityWay2[3] = 1;
+			}
+			if(Maxbias == xbias || Maxbias == - xbias){
+				PriorityWay1[3]  = 1;
+				PriorityWay2[1] = 1;
+			}
+		}
+		if(x >= PX && y <= PY){
+			if(Maxbias == ybias || Maxbias == -ybias){
+				PriorityWay1[1]  = 1;
+				PriorityWay2[2] = 1;
+			}
+			if(Maxbias == xbias || Maxbias == - xbias){
+				PriorityWay1[2]  = 1;
+				PriorityWay2[1] = 1;
+			}
+		}
+		if(x >= PX && y >= PY){
+			if(Maxbias == ybias || Maxbias == -ybias){
+				PriorityWay1[0]  = 1;
+				PriorityWay2[2] = 1;
+			}
+			if(Maxbias == xbias || Maxbias == - xbias){
+				PriorityWay1[2]  = 1;
+				PriorityWay2[0] = 1;
+			}
+		}
+		
+		
+		
+		
+		
+		
+
+		
+		//printf("mb %i\n",Maxbias);
+	
+		//for(int i = 0;i < 4;i++){
+		//	printf("%i\t",AllowWays[i]);
+		//}
+		//printf("\n");
+		//for(int i = 0;i < 4;i++){
+		//	printf("%i\t",PriorityWay1[i]);
+		//}
+		//printf("\n");
+		//for(int i = 0;i < 4;i++){
+		//	printf("%i\t",PriorityWay2[i]);
+		//}
+		
+}
+
+int matches(){
+	int nextstep = 4;;
+	for(int i = 0;i < 4;i++){
+		if(AllowWays[i] == PriorityWay1[i] && AllowWays[i] == 1 ){
+			nextstep	= i;
+		}
+	}	
+	if(nextstep == 4){
+		for(int i = 0;i < 4;i++){
+			if(AllowWays[i] == PriorityWay2[i] && AllowWays[i] == 1 ){
+				nextstep	= i;
+			}
+		}
+	}
+	//printf("%i\n",nextstep);
+		
+	
+	return nextstep;
+}
+
+
 
 void DeathCheckPlayer(eDir Nextd,int x,int y){
 	int nextx = x;
@@ -371,7 +501,6 @@ void bot4logic(){
 		}
 	
 }
-
 void bot7logic(){
 	DeathCheck(bot7dir,bot7x,bot7y);
 	int num = 0;
@@ -451,85 +580,6 @@ void bot7logic(){
 	
 }
 
-void bot5logic(){
-	DeathCheck(bot5dir,bot5x,bot5y);
-	int num = 0;
-	if((((Distance(bot5x,bot5y) > 16)||Distance(bot5x,bot5y) < 6) && ChangeDir(bot5x,bot5y)) || (CheckWallforBot(bot5dir,bot5x,bot5y) == 0)){
-		bot5dir = STOP;
-		PossibleWays(bot5x,bot5y);
-		for(int i = 0;i < 4;i++){
-			if(AllowWays[i] == 1){
-				num++;
-			}	
-		}
-		do{
-			int ii = rand();
-			int nextway = ii % ++num;
-			if(AllowWays[nextway] == 1){
-				switch(nextway){
-					case 0:
-						bot5dir = UP;
-						break;
-					case 1:
-						bot5dir = DOWN;
-						break;
-					case 2:
-						bot5dir = LEFT;
-						break;
-					case 3:
-						bot5dir = RIGHT;
-						break;
-					default:
-						bot5dir = STOP;
-				 }
-			}
-		}while(bot5dir == STOP);
-	}
-			
-	switch (bot5dir){
-		case LEFT:
-			if(NextStep(bot5dir,bot5y,bot5x) == 0){
-				map[bot5y][bot5x] = ' ';	
-			}else{
-				map[bot5y][bot5x] = '.';	
-			}
-			bot5x--;
-			map[bot5y][bot5x] = '@';
-			break;
-		case RIGHT:
-			if(NextStep(bot5dir,bot5y,bot5x) == 0){
-				map[bot5y][bot5x] = ' ';	
-			}else{
-				map[bot5y][bot5x] = '.';	
-			}
-			bot5x++;
-			map[bot5y][bot5x] = '@';
-			break;
-		case UP:
-			if(NextStep(bot5dir,bot5y,bot5x) == 0){
-				map[bot5y][bot5x] = ' ';	
-			}else{
-				map[bot5y][bot5x] = '.';	
-			}
-			bot5y--;
-			map[bot5y][bot5x] = '@';
-			break;
-		case DOWN:
-			if(NextStep(bot5dir,bot5y,bot5x) == 0){
-				map[bot5y][bot5x] = ' ';	
-			}else{
-				map[bot5y][bot5x] = '.';	
-			}
-			bot5y++;
-			map[bot5y][bot5x] = '@';
-			break;
-		case STOP:
-			map[bot5y][bot5x] = '@';
-			break;
-		}
-	
-}
-
 void bot6logic(){
 	DeathCheck(bot6dir,bot6x,bot6y);
 	int num = 0;
@@ -604,6 +654,282 @@ void bot6logic(){
 			break;
 		case STOP:
 			map[bot6y][bot6x] = '@';
+			break;
+		}
+	
+}
+
+
+void bot8logic(){
+	DeathCheck(bot8dir,bot8x,bot8y);
+	int num = 0;
+	if(ChangeDir(bot8x,bot8y) || (CheckWallforBot(bot8dir,bot8x,bot8y) == 0)){
+		bot8dir = STOP;
+		PossibleWays(bot8x,bot8y);
+		PriorityWays(bot8x,bot8y);
+		int nextway = matches();
+		if(nextway != 4){
+			switch(nextway){
+					case 0:
+						bot8dir = UP;
+						break;
+					case 1:
+						bot8dir = DOWN;
+						break;
+					case 2:
+						bot8dir = LEFT;
+						break;
+					case 3:
+						bot8dir = RIGHT;
+						break;
+			}
+		}else{
+			for(int i = 0;i < 4;i++){
+				if(AllowWays[i] == 1){
+					num++;
+				}	
+			}
+		do{
+			int ii = rand();
+			nextway = ii % ++num;
+			if(AllowWays[nextway] == 1){
+				switch(nextway){
+					case 0:
+						bot8dir = UP;
+						break;
+					case 1:
+						bot8dir = DOWN;
+						break;
+					case 2:
+						bot8dir = LEFT;
+						break;
+					case 3:
+						bot8dir = RIGHT;
+						break;
+					default:
+						bot8dir = STOP;
+				 }
+			}
+		}while(bot8dir == STOP);
+	}	
+		}
+		
+			
+	switch (bot8dir){
+		case LEFT:
+			if(NextStep(bot8dir,bot8y,bot8x) == 0){
+				map[bot8y][bot8x] = ' ';	
+			}else{
+				map[bot8y][bot8x] = '.';	
+			}
+			bot8x--;
+			map[bot8y][bot8x] = '@';
+			break;
+		case RIGHT:
+			if(NextStep(bot8dir,bot8y,bot8x) == 0){
+				map[bot8y][bot8x] = ' ';	
+			}else{
+				map[bot8y][bot8x] = '.';	
+			}
+			bot8x++;
+			map[bot8y][bot8x] = '@';
+			break;
+		case UP:
+			if(NextStep(bot8dir,bot8y,bot8x) == 0){
+				map[bot8y][bot8x] = ' ';	
+			}else{
+				map[bot8y][bot8x] = '.';	
+			}
+			bot8y--;
+			map[bot8y][bot8x] = '@';
+			break;
+		case DOWN:
+			if(NextStep(bot8dir,bot8y,bot8x) == 0){
+				map[bot8y][bot8x] = ' ';	
+			}else{
+				map[bot8y][bot8x] = '.';	
+			}
+			bot8y++;
+			map[bot8y][bot8x] = '@';
+			break;
+		case STOP:
+			map[bot8y][bot8x] = '@';
+			break;
+		}
+	
+}
+void bot9logic(){
+	DeathCheck(bot9dir,bot9x,bot9y);
+	int num = 0;
+	if(ChangeDir(bot9x,bot9y) || (CheckWallforBot(bot9dir,bot9x,bot9y) == 0)){
+		bot9dir = STOP;
+		PossibleWays(bot9x,bot9y);
+		PriorityWays(bot9x,bot9y);
+		int nextway = matches();
+		if(nextway != 4){
+			switch(nextway){
+					case 0:
+						bot9dir = UP;
+						break;
+					case 1:
+						bot9dir = DOWN;
+						break;
+					case 2:
+						bot9dir = LEFT;
+						break;
+					case 3:
+						bot9dir = RIGHT;
+						break;
+			}
+		}else{
+			for(int i = 0;i < 4;i++){
+				if(AllowWays[i] == 1){
+					num++;
+				}	
+			}
+		do{
+			int ii = rand();
+			nextway = ii % ++num;
+			if(AllowWays[nextway] == 1){
+				switch(nextway){
+					case 0:
+						bot9dir = UP;
+						break;
+					case 1:
+						bot9dir = DOWN;
+						break;
+					case 2:
+						bot9dir = LEFT;
+						break;
+					case 3:
+						bot9dir = RIGHT;
+						break;
+					default:
+						bot9dir = STOP;
+				 }
+			}
+		}while(bot9dir == STOP);
+	}	
+		}
+		
+			
+	switch (bot9dir){
+		case LEFT:
+			if(NextStep(bot9dir,bot9y,bot9x) == 0){
+				map[bot9y][bot9x] = ' ';	
+			}else{
+				map[bot9y][bot9x] = '.';	
+			}
+			bot9x--;
+			map[bot9y][bot9x] = '@';
+			break;
+		case RIGHT:
+			if(NextStep(bot9dir,bot9y,bot9x) == 0){
+				map[bot9y][bot9x] = ' ';	
+			}else{
+				map[bot9y][bot9x] = '.';	
+			}
+			bot9x++;
+			map[bot9y][bot9x] = '@';
+			break;
+		case UP:
+			if(NextStep(bot9dir,bot9y,bot9x) == 0){
+				map[bot9y][bot9x] = ' ';	
+			}else{
+				map[bot9y][bot9x] = '.';	
+			}
+			bot9y--;
+			map[bot9y][bot9x] = '@';
+			break;
+		case DOWN:
+			if(NextStep(bot9dir,bot9y,bot9x) == 0){
+				map[bot9y][bot9x] = ' ';	
+			}else{
+				map[bot9y][bot9x] = '.';	
+			}
+			bot9y++;
+			map[bot9y][bot9x] = '@';
+			break;
+		case STOP:
+			map[bot9y][bot9x] = '@';
+			break;
+		}
+	
+}
+void bot5logic(){
+	DeathCheck(bot5dir,bot5x,bot5y);
+	int num = 0;
+	if(CheckWallforBot(bot5dir,bot5x,bot5y) == 0){
+		bot5dir = STOP;
+		PossibleWays(bot5x,bot5y);
+		for(int i = 0;i < 4;i++){
+			if(AllowWays[i] == 1){
+				num++;
+			}	
+		}
+		do{
+			int ii = rand();
+			int nextway = ii % ++num;
+			if(AllowWays[nextway] == 1){
+				switch(nextway){
+					case 0:
+						bot5dir = UP;
+						break;
+					case 1:
+						bot5dir = DOWN;
+						break;
+					case 2:
+						bot5dir = LEFT;
+						break;
+					case 3:
+						bot5dir = RIGHT;
+						break;
+					default:
+						bot5dir = STOP;
+				 }
+			}
+		}while(bot5dir == STOP);
+	}
+			
+	switch (bot5dir){
+		case LEFT:
+			if(NextStep(bot5dir,bot5y,bot5x) == 0){
+				map[bot5y][bot5x] = ' ';	
+			}else{
+				map[bot5y][bot5x] = '.';	
+			}
+			bot5x--;
+			map[bot5y][bot5x] = '@';
+			break;
+		case RIGHT:
+			if(NextStep(bot5dir,bot5y,bot5x) == 0){
+				map[bot5y][bot5x] = ' ';	
+			}else{
+				map[bot5y][bot5x] = '.';	
+			}
+			bot5x++;
+			map[bot5y][bot5x] = '@';
+			break;
+		case UP:
+			if(NextStep(bot5dir,bot5y,bot5x) == 0){
+				map[bot5y][bot5x] = ' ';	
+			}else{
+				map[bot5y][bot5x] = '.';	
+			}
+			bot5y--;
+			map[bot5y][bot5x] = '@';
+			break;
+		case DOWN:
+			if(NextStep(bot5dir,bot5y,bot5x) == 0){
+				map[bot5y][bot5x] = ' ';	
+			}else{
+				map[bot5y][bot5x] = '.';	
+			}
+			bot5y++;
+			map[bot5y][bot5x] = '@';
+			break;
+		case STOP:
+			map[bot5y][bot5x] = '@';
 			break;
 		}
 	
@@ -836,8 +1162,8 @@ void Print(){
 		//printf("%s\n",map[i]);
 	}	
 	printf("score: %i left: %i\n",score,290 - score);
-	//printf(" PY %i--PX %i",PY,PX);
-	Sleep(100);
+	printf(" PY %i--PX %i",PY,PX);
+	Sleep(150);
 	if(GameOver == 1){
 		system("cls");
 	}else if(GameOver == 0 || score != 290){
@@ -854,13 +1180,15 @@ int main(){
 		Print();
 		input();
 		move();
-		bot1logic();
-		bot2logic();
-		bot3logic();
-		bot4logic();
-		bot5logic();
-		bot6logic();
-		bot7logic();
+		bot1logic(); // 0 ii
+		bot2logic(); // 0 ii
+		bot3logic(); // 0 ii
+		bot4logic(); // midl ii 
+		bot5logic(); // low ii
+		bot6logic(); // low ii
+		bot7logic(); // midl ii
+		bot8logic(); // smart ii
+		bot9logic(); // smart ii
 		logic();
 	}
 	Print();
